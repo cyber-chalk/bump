@@ -1,0 +1,95 @@
+body {
+	background-color: #cebca7;
+	color: rgb(20, 20, 20);
+	font-family: "inter";
+}
+
+#header {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: 1fr;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	align-items: center;
+	justify-items: center;
+}
+
+#header h2:nth-child(odd) {
+	font-size: 1.5vw;
+	color: #fff7ef;
+}
+
+#title {
+	font-family: "notable";
+	font-size: 3vw;
+	line-height: 0;
+	/* margin-left: 30%;
+	margin-right: 30%; */
+}
+
+#gamesContainer {
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.prevGame {
+	padding: 0.1em 0.3em;
+	background-color: #fff7ef;
+	border-radius: 0.5vw;
+}
+
+#multiContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#bigText {
+	font-size: 11vw;
+}
+
+#controlPanel {
+	padding: 1vw 2vw;
+	display: flex;
+	justify-content: center;
+	width: fit-content;
+	background-color: #e6e0da;
+	border-radius: 1vw;
+	margin: 0 auto;
+}
+
+hr {
+	width: 0.2vw;
+	background: #cebca7;
+	margin: 0.5vw 2vw;
+	border-radius: 1vw;
+	border: 0.1vw solid #cebca7;
+}
+
+#placeBet {
+	font-size: 90%;
+	padding: 0vw 1vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#placeBet input {
+	width: 3vw;
+	border-style: solid;
+	border-radius: 0.4vw;
+	font-size: 1em;
+	font-family: "Inter";
+	padding: 10% 20%;
+}
+
+#button {
+	background-color: #a46232;
+	border-radius: 1vw;
+	padding: 0vw 1vw;
+	color: #141414;
+	font-size: 80%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
