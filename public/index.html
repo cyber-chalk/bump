@@ -23,14 +23,19 @@
 		</div>
 
 		<div id="gamesContainer">
+			<!-- just do prevoius game not all of them -->
 			<div class="prevGame">0.00</div>
 		</div>
 		<div id="multiContainer"><h1 id="bigText">0.00x</h1></div>
 		<div id="controlPanel">
-		
 			<div id="placeBet">
 				<h2>Bet:</h2>
-				<input type="text" name="bet" id="betPlaced" />
+				<input
+					type="text"
+					name="bet"
+					oninput="betPlaced = this.value"
+					id="betPlaced"
+				/>
 			</div>
 			<hr />
 			<div id="button">
