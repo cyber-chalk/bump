@@ -3,7 +3,7 @@ const app = express();
 
 app.use(express.static("public")); // uses the public folder for static files
 
-app.listen(3000);
+app.listen(3000); // uses http://localhost:3000/
 
 const { WebSocketServer } = require("ws");
 
@@ -41,7 +41,7 @@ function lnBetaFunc(a, b) {
 
 function expensive(rand, i) {
 	return (rand = Math.max(1, Math.min(rand, 0)));
-
+	// adds randomness to a number
 	// if (i + rand >= 1) {
 	// 	if (Boolean(Math.round(Math.random()))) {
 	// 		rand *= -1;
@@ -57,27 +57,25 @@ function expensive(rand, i) {
 }
 
 let bank = 100;
+let multiplier = 100;
 
 function getRandom(min, max) {
 	return Math.random() * (max - min) + min;
 }
 
-// let previousArr = [];
-// function previousGames(multipler) {
-// 	previousArr.push(multipler);
-// }
-
-async function game(amountPayed) {
+function game(amountPayed, ws) {
 	bank -= amountPayed;
-	let exitArr = [];
+	let exitArr = []; // holds cashouts per second
 	let players = 100;
-	let multiplier = 100;
-	// no 5 second wait
-	let rpd = Math.floor(getRandom(1, 100));
-	//prettier-ignore
-	if (rpd > 95) return crash(100);
+	let skip = false; // crashes and skips code
 
-	for (let i = 0; i < 100; i++) {
+	let rpd = Math.floor(getRandom(1, 100));
+	if (rpd > 95) {
+		skip = true;
+		console.log("instant");
+	}
+
+	for (let i = 0; i < players; i++) {
 		exitArr.push(betaPDF(i / players, 2, 4));
 
 		// exitArr.push(
@@ -98,55 +96,84 @@ async function game(amountPayed) {
 		// plus minus it with a random number gen
 		// or select a random point like at first
 	}
-
-	//multiplyer GAME OFFICALLY STARTS
+	// console.log(exitArr);
+	//multiplier GAME OFFICALLY STARTS
 	let lapsed = 0; // time elapsed since last exit
 	let n = 0; // counter
 	let leave = 0; //adds beta distrobution and when 1 person has been accounted for it leaves
+	let incrementCounter = 0;
+	let secondpassed = false;
+	ws.send("start");
 
-	wss.on("listening", function (ws) {
-		ws.send("start");
+	let intID = setInterval(() => {
+		if (multiplier == 100) multiplier += 1;
+		multiplier += 1;
 
-		let intID = setInterval(() => {
-			if (multiplier == 100) multiplier += 1;
-			multiplier += 1;
-			amountPayed *= multipler / 100;
-
-			exitArr[n] += leave;
+		if (secondpassed) {
+			// checks if a second has passed
+			// gets cashouts per second and puts it in usable format
+			leave += exitArr[n];
 			if (leave >= 1) {
-				leave--;
+				let rounded = Math.floor(leave);
+				console.log("person left", rounded);
+				ws.send("left");
+				leave -= rounded;
 				lapsed = 0;
 			}
 			n++;
-			lapsed += 50;
-			tick(lapsed);
-			if (lapsed != 0) {
-				clearInterval(intID);
-				return ws.send(`crash ${multiplyer}`);
-			}
-		}, 50);
-	});
+		}
+
+		incrementCounter++;
+
+		lapsed = tick(lapsed);
+		console.log("after tick", lapsed);
+		if (lapsed != 0 || skip == true) {
+			// crash
+			console.log("crashing lapsed:", lapsed);
+			clearInterval(intID);
+			ws.send(`crash ${multiplier}`);
+			multiplier = 100;
+			return;
+		}
+		lapsed += 60;
+		if (secondpassed) secondpassed = false;
+		if (incrementCounter >= 8) {
+			secondpassed = true;
+			incrementCounter = 0;
+		}
+		// 60 miliseconds * 16 is roughly = 1 sec which has been changed to half a second
+		// needed to see if the seconds change
+	}, 60);
 }
 
 function tick(probability) {
-	probability = (probability * 2) / 100;
-	if (getRandom(0, 10) + probability >= 10) {
-		// change number pls
+	let dev = (probability * 2) / 100;
+	let rand = Math.round(getRandom(1, 150));
+	// probability increases as time without cashout gets higher
+	if (rand + dev >= 150) {
+		console.log("did not pass if", rand, dev, probability);
 		//crash
-		return;
+		return probability;
 	} else {
-		return (lapsed = 0);
+		return 0;
 	}
 }
 
 wss.on("connection", function connection(ws) {
 	ws.on("error", console.error);
+	ws.send(`bank ${bank}`);
 
 	ws.on("message", function message(data) {
-		console.log("received:", data);
-		let data1 = data.split(" ");
-		if (data1[0] == "bet") game(data1[1]);
-	});
+		console.log("received:", data.toString());
+		let data1 = data.toString().split(" ");
+		if (data1[0] == "bet") game(data1[1], ws);
 
-	ws.send(`bank ${bank}`);
+		if (data1[0] == "cashout") {
+			if (data1[1] != multiplier)
+				console.log("issue", data1[1], multiplier);
+			let winnings = (data1[2] / 100).toFixed(2) * multiplier;
+			bank += winnings;
+			ws.send(`bank ${bank}`);
+		}
+	});
 });
