@@ -9,6 +9,10 @@ let intglob = false; //stops the interval
 
 //attaches to websocket
 const socket = new WebSocket("ws://localhost:8080");
+// const socket = new WebSocket(
+// 	"wss://animated-couscous-jq6xvgjj5j72p66v-8080.app.github.dev/"
+// ); // or whatever codespace
+
 socket.onerror = (event) => {
 	console.log(event);
 };
@@ -22,6 +26,7 @@ socket.addEventListener("message", (event) => {
 	if (data1[0] == "start") {
 		console.log("started");
 		ig = true;
+		document.getElementById("players").innerHTML = "players: " + "100";
 		// changes styles
 		button.style.color = "#fff7ef";
 		button.style.backgroundColor = "rgb(20, 20, 20)";
@@ -88,8 +93,8 @@ button.addEventListener("click", function () {
 // hook up web sockets, 🟢 bank, 🟢 game start, 🟢timer, 🟢 multiplier start, 🟢 cashout and 🟢 game end
 // add a true/false thing so when you press the button while the game is runnign
 
-// the player needs to impact the game more
 // game needs to replay without reloading 🟢
 // mabe add live players in game count 🟢
 // comment code 🟢
-// func only allows one bot to leave at a time (go into negatives), move n
+// func only allows one bot to leave at a time (go into negatives), move n 🟢
+// randomise pdf x

@@ -9,12 +9,6 @@ const { WebSocketServer } = require("ws");
 
 const wss = new WebSocketServer({ port: 8080 });
 
-// for (let i = 0; i < 100; i++) {
-// 	// let rand = Math.floor(Math.random() * (10 - 1) + 1) / 10;
-// 	let rand = i / 100;
-// 	console.log(naiveBetaPDF(rand, 2, 4));
-// }
-
 //log beta func
 function betaPDF(x, a, b) {
 	return Math.exp(
@@ -76,7 +70,7 @@ function game(amountPayed, ws) {
 	}
 
 	for (let i = 0; i < players; i++) {
-		exitArr.push(betaPDF(i / players, 2, 4));
+		exitArr.push(betaPDF(i / players, 2.4, 4));
 
 		// exitArr.push(
 		// 	Math.round(
@@ -114,19 +108,23 @@ function game(amountPayed, ws) {
 			// gets cashouts per second and puts it in usable format
 			leave += exitArr[n];
 			if (leave >= 1) {
-				let rounded = Math.floor(leave);
+				let rounded = Math.floor(leave); // the amount of bots
 				console.log("person left", rounded);
 				ws.send("left");
+				for (let i = 0; i < rounded - 1; i++) {
+					console.log("worked");
+					ws.send("left");
+				}
 				leave -= rounded;
-				lapsed = 0;
+				lapsed = Math.max(0, lapsed - 60);
 			}
 			n++;
 		}
 
 		incrementCounter++;
 
-		lapsed = tick(lapsed);
-		console.log("after tick", lapsed);
+		lapsed = Math.max(0, tick(lapsed));
+		// console.log("after tick", lapsed);
 		if (lapsed != 0 || skip == true) {
 			// crash
 			console.log("crashing lapsed:", lapsed);
@@ -137,7 +135,7 @@ function game(amountPayed, ws) {
 		}
 		lapsed += 60;
 		if (secondpassed) secondpassed = false;
-		if (incrementCounter >= 8) {
+		if (incrementCounter >= 6) {
 			secondpassed = true;
 			incrementCounter = 0;
 		}
@@ -148,14 +146,14 @@ function game(amountPayed, ws) {
 
 function tick(probability) {
 	let dev = (probability * 2) / 100;
-	let rand = Math.round(getRandom(1, 150));
+	let rand = Math.round(getRandom(1, 200));
 	// probability increases as time without cashout gets higher
-	if (rand + dev >= 150) {
+	if (rand + dev >= 200) {
 		console.log("did not pass if", rand, dev, probability);
 		//crash
 		return probability;
 	} else {
-		return 0;
+		return -60;
 	}
 }
 
