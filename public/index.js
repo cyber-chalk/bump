@@ -26,7 +26,7 @@ socket.addEventListener("message", (event) => {
 	if (data1[0] == "start") {
 		console.log("started");
 		ig = true;
-		document.getElementById("players").innerHTML = "players: " + "100";
+		document.getElementById("players").innerHTML = "players: " + "120";
 		// changes styles
 		button.style.color = "#fff7ef";
 		button.style.backgroundColor = "rgb(20, 20, 20)";
@@ -62,7 +62,6 @@ socket.addEventListener("message", (event) => {
 		// updates the player count
 		let num =
 			document.getElementById("players").innerHTML.split(" ")[1] - 1;
-		console.log("left", num);
 		document.getElementById("players").innerHTML = "players: " + num;
 	}
 });

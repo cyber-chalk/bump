@@ -60,7 +60,7 @@ function getRandom(min, max) {
 function game(amountPayed, ws) {
 	bank -= amountPayed;
 	let exitArr = []; // holds cashouts per second
-	let players = 100;
+	let players = 120; // normally 100
 	let skip = false; // crashes and skips code
 
 	let rpd = Math.floor(getRandom(1, 100));
@@ -70,7 +70,7 @@ function game(amountPayed, ws) {
 	}
 
 	for (let i = 0; i < players; i++) {
-		exitArr.push(betaPDF(i / players, 2.4, 4));
+		exitArr.push(betaPDF(i / players, 2, 5));
 
 		// exitArr.push(
 		// 	Math.round(
@@ -135,7 +135,7 @@ function game(amountPayed, ws) {
 		}
 		lapsed += 60;
 		if (secondpassed) secondpassed = false;
-		if (incrementCounter >= 6) {
+		if (incrementCounter >= 8) {
 			secondpassed = true;
 			incrementCounter = 0;
 		}
@@ -146,9 +146,9 @@ function game(amountPayed, ws) {
 
 function tick(probability) {
 	let dev = (probability * 2) / 100;
-	let rand = Math.round(getRandom(1, 200));
+	let rand = Math.round(getRandom(1, 170));
 	// probability increases as time without cashout gets higher
-	if (rand + dev >= 200) {
+	if (rand + dev >= 170) {
 		console.log("did not pass if", rand, dev, probability);
 		//crash
 		return probability;
